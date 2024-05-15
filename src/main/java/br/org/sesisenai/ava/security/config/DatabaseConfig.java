@@ -2,6 +2,7 @@ package br.org.sesisenai.ava.security.config;
 
 import br.org.sesisenai.ava.entity.Usuario;
 import br.org.sesisenai.ava.repository.UsuarioRepository;
+import br.org.sesisenai.ava.security.model.Authority;
 import br.org.sesisenai.ava.security.model.USerDetails;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
@@ -20,14 +21,14 @@ public class DatabaseConfig {
     public void init(){
         Usuario usuario = new Usuario();
         usuario.setNome("Teste");
+        usuario.setSenha("123");
         usuario.setUserDetailsEntity(USerDetails.builder()
                 .usuario(usuario).enabled(true)
                 .accountNonExpired(true)
                 .accountNonLocked(true)
                 .credentialsNonExpired(true)
                 .usuario(usuario)
-                .authorities(new GrantedAuthority().getAuthority())
-                .password(new BCryptPasswordEncoder().encode("123")).build());
+                .authorities(List.of(Authority.GET)).build());
         usuarioRepository.save(usuario);
     }
 }
