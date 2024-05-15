@@ -62,7 +62,7 @@ public class Usuario implements ResponseConversorDTO<UsuarioResponseDTO> {
 
     public void setUserDetailsEntity() {
         this.userDetailsEntity = USerDetails.builder()
-                .usuario(this).build();
+                .usuario(this).enabled(true).accountNonExpired(true).accountNonLocked(true).credentialsNonExpired(true).build();
     }
 }
 
