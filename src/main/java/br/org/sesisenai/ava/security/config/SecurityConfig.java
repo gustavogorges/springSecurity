@@ -2,6 +2,7 @@ package br.org.sesisenai.ava.security.config;
 //import br.org.sesisenai.ava.security.auths.IsEnrollmentOfUser;
 import br.org.sesisenai.ava.security.auths.IsOnlyUserCourse;
 import br.org.sesisenai.ava.security.auths.IsUser;
+import br.org.sesisenai.ava.security.filter.AuthFilter;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +12,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.SecurityContextRepository;
 
 @Configuration
@@ -20,6 +22,7 @@ public class SecurityConfig {
     private final SecurityContextRepository securityContextRepository;
     private final IsUser isUser;
     private final IsOnlyUserCourse isOnlyUserCourse;
+    private final AuthFilter authFilter;
 //    private final IsEnrollmentOfUser isEnrollmentOfUser;
 
     @Bean
@@ -27,11 +30,16 @@ public class SecurityConfig {
         //CSRF -> cross-site request forgery (falsificação de solicitação entre sites)
         //neste caso a csrf esta desativada (nao há proteção para esse ataque)
         http.csrf(AbstractHttpConfigurer::disable);
+        http.formLogin(AbstractHttpConfigurer::disable);
+        http.logout(AbstractHttpConfigurer::disable);
+        http.addFilterBefore
+                (authFilter, UsernamePasswordAuthenticationFilter.class);
 
         http.authorizeHttpRequests(
                 authorizeRequests ->
                         authorizeRequests
                                 // All
+                                .requestMatchers(HttpMethod.POST,"/auth/login").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/cursos").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/cursos/{id}").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll()
@@ -50,9 +58,6 @@ public class SecurityConfig {
         );
 
         http.securityContext((context) -> context.securityContextRepository(securityContextRepository));
-
-        http.logout(Customizer.withDefaults());
-        http.formLogin(Customizer.withDefaults());
 
         //stateless -> não há persistencia de sessão, assim que a API envia a response a sessão é terminada
 //        http.sessionManagement(config -> config.sessionCreationPolicy(

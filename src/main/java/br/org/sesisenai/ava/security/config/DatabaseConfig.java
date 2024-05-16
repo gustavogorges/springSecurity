@@ -22,6 +22,7 @@ public class DatabaseConfig {
         Usuario usuario = new Usuario();
         usuario.setNome("Teste");
         usuario.setSenha("123");
+        usuario.setEmail("Teste123");
         usuario.setUserDetailsEntity(USerDetails.builder()
                 .usuario(usuario).enabled(true)
                 .accountNonExpired(true)
